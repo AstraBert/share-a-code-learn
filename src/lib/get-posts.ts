@@ -15,6 +15,18 @@ export async function getPosts(): Promise<undefined | DisplayPost[]> {
   return await getDisplayPosts(posts as SocialPost[]);
 }
 
+export async function getPostById(postId: number): Promise<undefined | DisplayPost> {
+  const supabase = await createClient();
+  const { data: posts, error: err } = await supabase.from("social").select().eq("id", postId);
+
+  if (err) {
+    console.log(err)
+    return undefined
+  }
+
+  return (await getDisplayPosts(posts as SocialPost[]))[0];
+}
+
 export async function getDisplayPosts(posts: SocialPost[]): Promise<DisplayPost[]> {
     const supabase = await createAdminClient();
     const displayPosts: DisplayPost[] = []
