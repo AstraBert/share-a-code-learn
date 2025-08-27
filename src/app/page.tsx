@@ -1,103 +1,151 @@
-import Image from "next/image";
+"use client"
 
-export default function Home() {
+import { useState, useEffect } from 'react';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
+import {
+  Button,
+} from "@/components/ui/button"
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "@/components/ui/avatar"
+import { Label } from "@/components/ui/label";
+
+import Link from "next/link";
+import { getPosts } from '@/lib/get-posts';
+import { DisplayPost } from '@/lib/types';
+import { Heart } from 'lucide-react';
+import { CodeBlock, CodeBlockCopyButton } from "@/components/ai-elements/code-block";
+import { updateLikes } from "@/lib/likes";
+
+const MainPage = () => {
+  const [posts, setPosts] = useState<DisplayPost[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  // Fetch posts on component mount
+  useEffect(() => {
+    const fetchPosts = async () => {
+      try {
+        setLoading(true);
+        const data = await getPosts();
+        if (typeof data === "undefined") {
+          setError('Failed to load posts');
+        } else {
+          setPosts(data);
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchPosts();
+  }, []);
+
+  const increaseLikes = async (currentLikes: number, postId: number) => {
+    try {
+      await updateLikes(currentLikes, postId);
+      // Update the local state to reflect the new like count
+      setPosts(prevPosts => 
+        prevPosts.map(post => 
+          post.id === postId 
+            ? { ...post, likes: post.likes + 1 }
+            : post
+        )
+      );
+    } catch (err) {
+      alert("There was an error while adding your likes, please try again later");
+      console.error('Error updating likes:', err);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen p-8 flex justify-center items-center">
+        <div className="text-xl">Loading posts...</div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen p-8 flex justify-center items-center">
+        <div className="text-xl text-red-500">{error}</div>
+      </div>
+    );
+  }
+
   return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+    <div className="min-h-screen p-8">
+      <div className="max-w-4xl mx-auto">
+        <div className="flex justify-between items-center mb-8">
+          <h1 className="text-3xl font-bold">Share-A-Code Learn</h1>
+          <h2 className="text-xl font-bold">Learn from Others with Their Code</h2>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+        <div className='flex justify-center items-center'>
+          <Link href={"https://app.shareacode.cc"}>
+            <Avatar style={{ width: '120px', height: '120px' }}>
+              <AvatarImage src="/shareacode.png" alt="Share-A-Code Logo"/>
+              <AvatarFallback>S-A-C</AvatarFallback>
+            </Avatar>
+          </Link>
+        </div>
+        <br />
+        <br />
+        <div className="grid grid-cols-1 gap-6">
+          {posts.map((dataPoint) => (
+            <Card key={dataPoint.id} className="w-full">
+              <CardHeader>
+                <CardTitle className="text-lg">
+                  {dataPoint.authorName}
+                </CardTitle>
+                <CardDescription>
+                  <Avatar style={{ width: '40px', height: '40px' }}>
+                    <AvatarImage src={dataPoint.authorImageUrl} alt="Author Avatar"/>
+                    <AvatarFallback>{dataPoint.authorName.split(" ")[0][0]}</AvatarFallback>
+                  </Avatar>
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div className="grid grid-cols-1 items-center gap-y-1.5">
+                    <span className="text-sm font-semibold text-gray-600">Description:</span>
+                    <CodeBlock code={dataPoint.instructions} language={"md"}>
+                      <CodeBlockCopyButton/>
+                    </CodeBlock>
+                  </div>
+                  
+                  <div>
+                    <span className="text-sm font-semibold text-gray-600">Code:</span>
+                    <CodeBlock code={dataPoint.code} language={dataPoint.codeLanguage}>
+                      <CodeBlockCopyButton/>
+                    </CodeBlock>
+                  </div>
+                </div>
+              </CardContent>
+              <CardFooter className="grid grid-cols-1 gap-y-1.5">
+                <Label>Likes: {dataPoint.likes}</Label>
+                <Button 
+                  variant={"secondary"} 
+                  onClick={() => increaseLikes(dataPoint.likes, dataPoint.id)}
+                >
+                  <Heart/>
+                  Like this post
+                </Button>
+              </CardFooter>
+            </Card>
+          ))}
+        </div>
+      </div>
     </div>
-  );
+  )
 }
+
+export default MainPage;
