@@ -22,7 +22,7 @@ import { Label } from "@/components/ui/label";
 import Link from "next/link";
 import { getPosts } from '@/lib/get-posts';
 import { DisplayPost } from '@/lib/types';
-import { Heart } from 'lucide-react';
+import { CopyCheck, Heart, Share } from 'lucide-react';
 import { CodeBlock, CodeBlockCopyButton } from "@/components/ai-elements/code-block";
 import { updateLikes } from "@/lib/likes";
 
@@ -30,6 +30,7 @@ const MainPage = () => {
   const [posts, setPosts] = useState<DisplayPost[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [sharedPosts, setSharedPosts] = useState<Set<number>>(new Set());
 
   // Fetch posts on component mount
   useEffect(() => {
@@ -63,6 +64,23 @@ const MainPage = () => {
     } catch (err) {
       alert("There was an error while adding your likes, please try again later");
       console.error('Error updating likes:', err);
+    }
+  };
+
+// Update the copyToClipboard function:
+  const copyToClipboard = async (postUrl: string, postId: number) => {
+    try {
+      await navigator.clipboard.writeText(postUrl);
+      setSharedPosts(prev => new Set([...prev, postId]));
+      setTimeout(() => {
+        setSharedPosts(prev => {
+          const newSet = new Set(prev);
+          newSet.delete(postId);
+          return newSet;
+        });
+      }, 2000);
+    } catch {
+      alert('Failed to copy URL to clipboard! :(');
     }
   };
 
@@ -104,13 +122,15 @@ const MainPage = () => {
             <Card key={dataPoint.id} className="w-full">
               <CardHeader>
                 <CardTitle className="text-lg">
-                  {dataPoint.authorName}
+                  <Link href={`/users?userId=${dataPoint.authorId}`}>{dataPoint.authorName}</Link>
                 </CardTitle>
                 <CardDescription>
-                  <Avatar style={{ width: '40px', height: '40px' }}>
-                    <AvatarImage src={dataPoint.authorImageUrl} alt="Author Avatar"/>
-                    <AvatarFallback>{dataPoint.authorName.split(" ")[0][0]}</AvatarFallback>
-                  </Avatar>
+                  <Link href={`/users?userId=${dataPoint.authorId}`}>
+                    <Avatar style={{ width: '40px', height: '40px' }}>
+                      <AvatarImage src={dataPoint.authorImageUrl} alt="Author Avatar"/>
+                      <AvatarFallback>{dataPoint.authorName.split(" ")[0][0]}</AvatarFallback>
+                    </Avatar>
+                  </Link>
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -138,6 +158,15 @@ const MainPage = () => {
                 >
                   <Heart/>
                   Like this post
+                </Button>
+                <Button 
+                  variant={"secondary"} 
+                  onClick={() => copyToClipboard(`https://learn.shareacode.cc/posts?postId=${dataPoint.id}`, dataPoint.id)}
+                >
+                  {!sharedPosts.has(dataPoint.id) && <Share />}
+                  {sharedPosts.has(dataPoint.id) && <CopyCheck />}
+                  {!sharedPosts.has(dataPoint.id) && 'Share this post'}
+                  {sharedPosts.has(dataPoint.id) && 'URL Copied to Clipboard!'}
                 </Button>
               </CardFooter>
             </Card>

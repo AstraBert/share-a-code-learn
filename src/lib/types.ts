@@ -19,5 +19,14 @@ export interface DisplayPost {
     authorImageUrl: string,
     likes: number,
     shareLink: string,
+    authorId: string,
     codeLanguage: string,
+}
+
+export interface DisplayUser {
+    name: string,
+    userName: string,
+    avatarUrl: string,
+    postsNumber: number,
+    mostUsedLanguage: string,
 }

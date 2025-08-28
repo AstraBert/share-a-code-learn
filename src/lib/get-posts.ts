@@ -36,7 +36,7 @@ export async function getDisplayPosts(posts: SocialPost[]): Promise<DisplayPost[
             continue
         } else {
             const url = userData.user.user_metadata.avatar_url! ?? "/shareacode.png"
-            displayPosts.push({authorImageUrl: url, authorName: post.authorName, code: post.code, instructions: post.instructions, created_at: post.created_at, likes: post.likes, shareLink: post.shareLink, codeLanguage: post.codeLanguage, id: post.id} as DisplayPost)
+            displayPosts.push({authorImageUrl: url, authorName: post.authorName, code: post.code, instructions: post.instructions, created_at: post.created_at, likes: post.likes, shareLink: post.shareLink, codeLanguage: post.codeLanguage, id: post.id, authorId: post.authorId} as DisplayPost)
         }
     } 
     return displayPosts
