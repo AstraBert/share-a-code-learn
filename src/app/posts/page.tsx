@@ -5,6 +5,7 @@ import { getPostById } from '@/lib/get-posts';
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { DisplayPost } from '@/lib/types';
+import { Suspense } from 'react';
 import {
   Card,
   CardContent,
@@ -27,7 +28,7 @@ import { CodeBlock, CodeBlockCopyButton } from "@/components/ai-elements/code-bl
 import { updateLikes } from "@/lib/likes";
 import Link from 'next/link';
 
-export default function PostsPage() {
+function PostsPage() {
   const searchParams = useSearchParams();
   const postIdParam = searchParams.get('postId');
   const [post, setPost] = useState<DisplayPost | undefined>(undefined);
@@ -139,5 +140,17 @@ export default function PostsPage() {
             </div>
             
         </div>
+  );
+}
+
+function PostsLoadingSkeleton() {
+  return <div>Loading posts...</div>;
+}
+
+export default function PostsSuspendedPage() {
+  return (
+    <Suspense fallback={<PostsLoadingSkeleton />}>
+      <PostsPage />
+    </Suspense>
   );
 }

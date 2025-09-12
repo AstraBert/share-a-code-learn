@@ -2,6 +2,7 @@
 
 import { getUserDetailsById } from '@/lib/get-users';
 import { Badge } from "@/components/ui/badge"
+import { Suspense } from "react";
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { DisplayUser } from '@/lib/types';
@@ -38,7 +39,7 @@ export function isValidUUID(uuid: string): boolean {
   return uuidValidate(uuid);
 }
 
-export default function PostsPage() {
+function UsersPage() {
   const searchParams = useSearchParams();
   const userIdParam = searchParams.get('userId');
   const [user, setUser] = useState<DisplayUser | undefined>(undefined);
@@ -141,5 +142,17 @@ export default function PostsPage() {
                 </Link>
             </div>
         </div>
+  );
+}
+
+function UsersLoadingSkeleton() {
+  return <div>Loading user details...</div>;
+}
+
+export default function UsersSuspendedPage() {
+  return (
+    <Suspense fallback={<UsersLoadingSkeleton />}>
+      <UsersPage />
+    </Suspense>
   );
 }

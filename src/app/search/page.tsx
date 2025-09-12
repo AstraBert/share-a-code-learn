@@ -25,9 +25,10 @@ import { CopyCheck, Heart, Share } from 'lucide-react';
 import { CodeBlock, CodeBlockCopyButton } from "@/components/ai-elements/code-block";
 import { updateLikes } from "@/lib/likes";
 import Link from 'next/link';
+import { Suspense } from 'react';
 import { search } from '@/lib/search';
 
-export default function PostsPage() {
+function SearchPage() {
   const searchParams = useSearchParams();
   const userIdParam = searchParams.get('userId');
   const languageParam = searchParams.get('language');
@@ -125,11 +126,11 @@ export default function PostsPage() {
     <div className="min-h-screen p-8">
       <div className="max-w-4xl mx-auto">
         <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold">Share-A-Code Learn</h1>
-          <h2 className="text-xl font-bold">Learn from Others with Their Code</h2>
+          <Link href={"/"}><h1 className="text-3xl font-bold">Share-A-Code Learn</h1></Link>
+          <Link href={"/"}><h2 className="text-xl font-bold">Learn from Others with Their Code</h2></Link>
         </div>
         <div className='flex justify-center items-center'>
-          <Link href={"https://app.shareacode.cc"}>
+          <Link href={"/"}>
             <Avatar style={{ width: '120px', height: '120px' }}>
               <AvatarImage src="/shareacode.png" alt="Share-A-Code Logo"/>
               <AvatarFallback>S-A-C</AvatarFallback>
@@ -198,5 +199,17 @@ export default function PostsPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+function SearchLoadingSkeleton() {
+  return <div>Loading search results...</div>;
+}
+
+export default function SearchSuspendedPage() {
+  return (
+    <Suspense fallback={<SearchLoadingSkeleton />}>
+      <SearchPage />
+    </Suspense>
   );
 }
