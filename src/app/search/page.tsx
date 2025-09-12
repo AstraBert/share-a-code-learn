@@ -1,6 +1,9 @@
-"use client"
+// app/posts/page.tsx
+'use client';
 
-import { useState, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { DisplayPost } from '@/lib/types';
 import {
   Card,
   CardContent,
@@ -18,37 +21,56 @@ import {
   AvatarImage,
 } from "@/components/ui/avatar"
 import { Label } from "@/components/ui/label";
-
-import Link from "next/link";
-import { getPosts } from '@/lib/get-posts';
-import { DisplayPost } from '@/lib/types';
 import { CopyCheck, Heart, Share } from 'lucide-react';
 import { CodeBlock, CodeBlockCopyButton } from "@/components/ai-elements/code-block";
 import { updateLikes } from "@/lib/likes";
+import Link from 'next/link';
+import { search } from '@/lib/search';
 
-const MainPage = () => {
+export default function PostsPage() {
+  const searchParams = useSearchParams();
+  const userIdParam = searchParams.get('userId');
+  const languageParam = searchParams.get('language');
+  const keywordsParam = searchParams.get('keywords');
   const [posts, setPosts] = useState<DisplayPost[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [sharedPosts, setSharedPosts] = useState<Set<number>>(new Set());
 
-  // Fetch posts on component mount
   useEffect(() => {
-    const fetchPosts = async () => {
-      try {
-        setLoading(true);
-        const data = await getPosts();
-        if (typeof data === "undefined") {
-          setError('Failed to load posts');
-        } else {
-          setPosts(data);
-        }
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchPosts();
-  }, []);
+    if (userIdParam || keywordsParam || languageParam) {
+      setLoading(true);
+      setError(null);
+      
+      search(userIdParam, languageParam, keywordsParam)
+        .then((postsToDisplay) => {
+          setPosts(postsToDisplay);
+        })
+        .catch((err) => {
+          setError('Failed to load post');
+          console.error(err);
+        })
+        .finally(() => {
+          setLoading(false);
+        });
+    }
+  }, [userIdParam, languageParam, keywordsParam]);
+
+  if (!userIdParam && !languageParam && !keywordsParam) {
+    return <div>Please provide a search parameter</div>;
+  }
+  
+  if (loading) {
+    return <div>Loading search results...</div>;
+  }
+  
+  if (error) {
+    return <div>Error: {error}</div>;
+  }
+  
+  if (posts.length == 0) {
+    return <div>No results for you search, try with something else!</div>;
+  }
 
   const increaseLikes = async (currentLikes: number, postId: number) => {
     try {
@@ -114,6 +136,9 @@ const MainPage = () => {
             </Avatar>
           </Link>
         </div>
+        <div className="flex justify-center items-center mb-8">
+          <h3 className="text-lg font-bold text-center">Results from your search:</h3>
+        </div>
         <br />
         <br />
         <div className="grid grid-cols-1 gap-6">
@@ -173,7 +198,5 @@ const MainPage = () => {
         </div>
       </div>
     </div>
-  )
+  );
 }
-
-export default MainPage;

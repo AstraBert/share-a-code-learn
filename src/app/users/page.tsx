@@ -77,7 +77,7 @@ export default function PostsPage() {
   }
   
   if (loading) {
-    return <div>Loading post...</div>;
+    return <div>Loading user details...</div>;
   }
   
   if (error) {
@@ -114,18 +114,22 @@ export default function PostsPage() {
                   
                   <div className='grid grid-cols-1 items-center gap-y-1'>
                     <span className="text-sm font-semibold text-gray-600">Most Used Language</span>
+                    <Link href={`/search?language=${user.mostUsedLanguage}`}>
                     <Badge className='bg-green-700 text-white text-shadow-lg'>{user.mostUsedLanguage}</Badge>
+                    </Link>
                   </div>
                 </div>
               </CardContent>
               <CardFooter className="grid grid-cols-1 gap-y-1.5">
-                <Button 
+                <Link href={`/search?userId=${userIdParam}`}>
+                  <Button 
                   variant={"secondary"} 
-                  onClick={() => console.log("clicked")}
-                >
-                  <Telescope />
-                  See this user&apos;s posts
-                </Button>
+                  className='bg-gray-50 hover:bg-gray-500 text-gray-500 hover:text-gray-50 border border-gray-200'
+                  >
+                    <Telescope />
+                    See this user&apos;s posts
+                  </Button>
+                </Link>
               </CardFooter>
             </Card>
             <div className='items-center justify-center'>
@@ -136,7 +140,6 @@ export default function PostsPage() {
                     </Button>
                 </Link>
             </div>
-            
         </div>
   );
 }
