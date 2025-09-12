@@ -60,18 +60,6 @@ function SearchPage() {
   if (!userIdParam && !languageParam && !keywordsParam) {
     return <div>Please provide a search parameter</div>;
   }
-  
-  if (loading) {
-    return <div>Loading search results...</div>;
-  }
-  
-  if (error) {
-    return <div>Error: {error}</div>;
-  }
-  
-  if (posts.length == 0) {
-    return <div>No results for you search, try with something else!</div>;
-  }
 
   const increaseLikes = async (currentLikes: number, postId: number) => {
     try {

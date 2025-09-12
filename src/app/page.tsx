@@ -25,6 +25,7 @@ import { DisplayPost } from '@/lib/types';
 import { CopyCheck, Heart, Share } from 'lucide-react';
 import { CodeBlock, CodeBlockCopyButton } from "@/components/ai-elements/code-block";
 import { updateLikes } from "@/lib/likes";
+import SearchBar from '@/components/custom/SearchBar';
 
 const MainPage = () => {
   const [posts, setPosts] = useState<DisplayPost[]>([]);
@@ -115,6 +116,8 @@ const MainPage = () => {
           </Link>
         </div>
         <br />
+        <br />
+        <SearchBar />
         <br />
         <div className="grid grid-cols-1 gap-6">
           {posts.map((dataPoint) => (
