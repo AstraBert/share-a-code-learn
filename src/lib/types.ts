@@ -24,10 +24,10 @@ export interface DisplayPost {
 }
 
 export interface DisplayUser {
-    name: string,
-    userName: string,
-    avatarUrl: string,
-    postsNumber: number,
-    mostUsedLanguage: string,
+    name: string | null,
+    userName: string | null,
+    avatarUrl: string | null,
+    postsNumber: number | null,
+    mostUsedLanguage: string | null,
     hasGithub: boolean,
 }
