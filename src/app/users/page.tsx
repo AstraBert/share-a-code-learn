@@ -109,13 +109,13 @@ function UsersPage() {
                   {user.name}
                 </CardTitle>
                 <CardAction className='text-lg text-gray-400 gap-y-2'>
-                    <Link href={user.hasGithub ? `https://github.com/${user.userName}` : '#'}>{getUserUserName(user.userName)}</Link>
+                    <Link href={user.hasGithub ? `https://github.com/${user.userName}` : '#'}>{getUserUserName(user.userName ?? "")}</Link>
                     {user.hasGithub && <Link href={`https://github.com/${user.userName}`}><Github /></Link>}
                 </CardAction>
                 <CardDescription>
                   <Avatar style={{ width: '40px', height: '40px' }}>
-                    <AvatarImage src={user.avatarUrl} alt="Author Avatar"/>
-                    <AvatarFallback>{user.name.split(" ")[0][0]}</AvatarFallback>
+                    <AvatarImage src={user.avatarUrl ?? "/shareacode.png"} alt="Author Avatar"/>
+                    <AvatarFallback>{user.name?.split(" ")[0][0] ?? "U"}</AvatarFallback>
                   </Avatar>
                 </CardDescription>
               </CardHeader>
@@ -123,13 +123,13 @@ function UsersPage() {
                 <div className="space-y-4">
                   <div className="grid grid-cols-1 items-center gap-y-2.5">
                     <span className="text-sm font-semibold text-gray-600">Posts</span>
-                    {user.postsNumber}
+                    {user.postsNumber ?? 0}
                   </div>
 
                   <div className='grid grid-cols-1 items-center gap-y-1'>
                     <span className="text-sm font-semibold text-gray-600">Most Used Language</span>
                     <Link href={`/search?language=${user.mostUsedLanguage}`}>
-                    <Badge className='bg-green-700 text-white text-shadow-lg'>{user.mostUsedLanguage}</Badge>
+                    <Badge className='bg-green-700 text-white text-shadow-lg'>{user.mostUsedLanguage ?? 'No Language'}</Badge>
                     </Link>
                   </div>
                 </div>

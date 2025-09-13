@@ -1,4 +1,4 @@
-import { login, loginWithDiscord } from '@/app/login/actions'
+import { login } from '@/app/login/actions'
 
 import { Button } from "@/components/ui/button"
 import {
@@ -11,7 +11,6 @@ import {
 } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import DiscordIcon from "@/components/icons/Discord"
 
 export default function LoginPage() {
   return (
@@ -48,10 +47,6 @@ export default function LoginPage() {
       <CardFooter className="flex-col gap-2">
         <Button type="submit" className="w-full">
           Login
-        </Button>
-        <Button type="button" onClick={loginWithDiscord} className="w-full">
-          <DiscordIcon />
-          Log In with Discord
         </Button>
         <p>Don&apos;t have an account?</p>
         <a href='/signup'>
