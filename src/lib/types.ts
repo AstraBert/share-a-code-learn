@@ -29,4 +29,5 @@ export interface DisplayUser {
     avatarUrl: string,
     postsNumber: number,
     mostUsedLanguage: string,
+    hasGithub: boolean,
 }

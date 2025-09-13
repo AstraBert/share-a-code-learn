@@ -30,8 +30,8 @@ export default function SearchBar() {
     const handleSearch = async (language: string | undefined, keywords: string | undefined) => {
         let searchLanguage: null | string = null
         let searchKeywords: null | string = null
-        
-        if (typeof language === "undefined" && typeof keywords === "undefined") {
+
+        if ((typeof language === "undefined" || language === "no-language") && (typeof keywords === "undefined" || keywords.trim() === "")) {
             setError("Pass an input before searching")
             return
         }
@@ -39,19 +39,19 @@ export default function SearchBar() {
         if (typeof language != "undefined" && language != "no-language") {
             searchLanguage = language
         }
-        if (typeof keywords != "undefined") {
+        if (typeof keywords != "undefined" && keywords.trim() != "") {
             searchKeywords = keywords
         }
-        
+
         const params = new URLSearchParams()
-    
+
         if (searchLanguage !== null) {
             params.append('language', searchLanguage)
         }
         if (searchKeywords !== null) {
             params.append('keywords', searchKeywords)
         }
-        
+
         // Navigate to search page
         window.location.href = `/search?${params.toString()}`
     }
@@ -108,20 +108,21 @@ export default function SearchBar() {
                     </Select>
                 </div>
                 <div className="relative group">
-                    <Input 
-                        type="text" 
-                        placeholder="Put some keywords here..." 
+                    <Input
+                        type="text"
+                        placeholder="Put some keywords here..."
                         onChange={handleKeywords}
                         value={keywords || ''}
                     />
                 </div>
                 <div className="relative group flex items-center justify-center">
-                    <Button 
-                        variant="outline" 
-                        size="icon" 
+                    <Button
+                        variant="outline"
+                        size="sm"
                         onClick={() => handleSearch(language, keywords)}
                         disabled={!!error}
                     >
+                        Search
                         <Search className="h-4 w-4" />
                     </Button>
                 </div>

@@ -12,6 +12,7 @@ import {
 import {
   Button,
 } from "@/components/ui/button"
+import { Skeleton } from '@/components/ui/skeleton';
 import {
   Avatar,
   AvatarFallback,
@@ -55,9 +56,9 @@ const MainPage = () => {
     try {
       await updateLikes(currentLikes, postId);
       // Update the local state to reflect the new like count
-      setPosts(prevPosts => 
-        prevPosts.map(post => 
-          post.id === postId 
+      setPosts(prevPosts =>
+        prevPosts.map(post =>
+          post.id === postId
             ? { ...post, likes: post.likes + 1 }
             : post
         )
@@ -86,8 +87,22 @@ const MainPage = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen p-8 flex justify-center items-center">
-        <div className="text-xl">Loading posts...</div>
+      <div className="flex flex-col items-center space-y-4">
+        <div>Loading posts...</div>
+        <div className="flex items-center space-x-4">
+          <Skeleton className="h-12 w-12 rounded-full" />
+          <div className="space-y-2">
+            <Skeleton className="h-4 w-[250px]" />
+            <Skeleton className="h-4 w-[200px]" />
+          </div>
+        </div>
+        <div className="flex items-center space-x-4">
+          <Skeleton className="h-12 w-12 rounded-full" />
+          <div className="space-y-2">
+            <Skeleton className="h-4 w-[250px]" />
+            <Skeleton className="h-4 w-[200px]" />
+          </div>
+        </div>
       </div>
     );
   }
@@ -117,7 +132,9 @@ const MainPage = () => {
         </div>
         <br />
         <br />
-        <SearchBar />
+<div className='flex bg-white border-0 shadow-2xl hover:shadow-blue-500/20 transform hover:scale-[1.02] transition-all duration-200 items-center justify-center rounded-2xl ring-1 ring-gray-900/5 p-1'>
+  <SearchBar />
+</div>
         <br />
         <div className="grid grid-cols-1 gap-6">
           {posts.map((dataPoint) => (
@@ -143,7 +160,7 @@ const MainPage = () => {
                       <CodeBlockCopyButton/>
                     </CodeBlock>
                   </div>
-                  
+
                   <div>
                     <span className="text-sm font-semibold text-gray-600">Code:</span>
                     <CodeBlock code={dataPoint.code} language={dataPoint.codeLanguage}>
@@ -154,15 +171,15 @@ const MainPage = () => {
               </CardContent>
               <CardFooter className="grid grid-cols-1 gap-y-1.5">
                 <Label>Likes: {dataPoint.likes}</Label>
-                <Button 
-                  variant={"secondary"} 
+                <Button
+                  variant={"secondary"}
                   onClick={() => increaseLikes(dataPoint.likes, dataPoint.id)}
                 >
                   <Heart/>
                   Like this post
                 </Button>
-                <Button 
-                  variant={"secondary"} 
+                <Button
+                  variant={"secondary"}
                   onClick={() => copyToClipboard(`https://learn.shareacode.cc/posts?postId=${dataPoint.id}`, dataPoint.id)}
                 >
                   {!sharedPosts.has(dataPoint.id) && <Share />}

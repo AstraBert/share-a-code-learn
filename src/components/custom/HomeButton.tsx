@@ -2,18 +2,18 @@
 'use client'
 import { Button } from "@/components/ui/button"
 import { useRouter } from 'next/navigation'
-import { RefreshCcw } from 'lucide-react'
+import { Home } from 'lucide-react'
 
-export default function RefreshButton() {
+export default function HomeButton() {
   const router = useRouter()
 
   return (
     <Button
-      onClick={() => router.refresh()}
+      onClick={() => router.push("/")}
       variant="default"
     >
-      <RefreshCcw />
-      Refresh the feed
+      <Home />
+      Home Page
     </Button>
   )
 }

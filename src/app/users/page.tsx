@@ -6,6 +6,7 @@ import { Suspense } from "react";
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { DisplayUser } from '@/lib/types';
+import { Skeleton } from '@/components/ui/skeleton';
 import {
   Card,
   CardAction,
@@ -23,7 +24,7 @@ import {
   AvatarFallback,
   AvatarImage,
 } from "@/components/ui/avatar"
-import { ArrowBigLeft, Telescope } from 'lucide-react';
+import { ArrowBigLeft, Github, Telescope } from 'lucide-react';
 import Link from 'next/link';
 import { validate as uuidValidate } from 'uuid';
 
@@ -48,7 +49,7 @@ function UsersPage() {
 
   useEffect(() => {
     if (userIdParam) {
-      
+
       const userId = userIdParam;
 
       if (userId === "" || !(isValidUUID(userId))) {
@@ -58,7 +59,7 @@ function UsersPage() {
 
       setLoading(true);
       setError(null);
-      
+
       getUserDetailsById(userId)
         .then((userToDisplay) => {
           setUser(userToDisplay);
@@ -76,15 +77,26 @@ function UsersPage() {
   if (!userIdParam) {
     return <div>Please provide a userId</div>;
   }
-  
+
   if (loading) {
-    return <div>Loading user details...</div>;
+    return (
+      <div className="flex flex-col items-center space-y-4">
+        <div>Loading user details...</div>
+        <div className="flex items-center space-x-4">
+          <Skeleton className="h-12 w-12 rounded-full" />
+          <div className="space-y-2">
+            <Skeleton className="h-4 w-[250px]" />
+            <Skeleton className="h-4 w-[200px]" />
+          </div>
+        </div>
+      </div>
+    )
   }
-  
+
   if (error) {
     return <div>Error: {error}</div>;
   }
-  
+
   if (!user) {
     return <div>User not found</div>;
   }
@@ -96,8 +108,9 @@ function UsersPage() {
                 <CardTitle className="text-lg">
                   {user.name}
                 </CardTitle>
-                <CardAction className='text-lg text-gray-400'>
-                    {getUserUserName(user.userName)}
+                <CardAction className='text-lg text-gray-400 gap-y-2'>
+                    <Link href={user.hasGithub ? `https://github.com/${user.userName}` : '#'}>{getUserUserName(user.userName)}</Link>
+                    {user.hasGithub && <Link href={`https://github.com/${user.userName}`}><Github /></Link>}
                 </CardAction>
                 <CardDescription>
                   <Avatar style={{ width: '40px', height: '40px' }}>
@@ -108,11 +121,11 @@ function UsersPage() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  <div className="grid grid-cols-1 items-center gap-y-1.5">
+                  <div className="grid grid-cols-1 items-center gap-y-2.5">
                     <span className="text-sm font-semibold text-gray-600">Posts</span>
                     {user.postsNumber}
                   </div>
-                  
+
                   <div className='grid grid-cols-1 items-center gap-y-1'>
                     <span className="text-sm font-semibold text-gray-600">Most Used Language</span>
                     <Link href={`/search?language=${user.mostUsedLanguage}`}>
@@ -123,9 +136,9 @@ function UsersPage() {
               </CardContent>
               <CardFooter className="grid grid-cols-1 gap-y-1.5">
                 <Link href={`/search?userId=${userIdParam}`}>
-                  <Button 
-                  variant={"secondary"} 
-                  className='bg-gray-50 hover:bg-gray-500 text-gray-500 hover:text-gray-50 border border-gray-200'
+                  <Button
+                  variant={"secondary"}
+                  className='bg-gray-50 hover:bg-black text-gray-500 hover:text-gray-50 border border-gray-200'
                   >
                     <Telescope />
                     See this user&apos;s posts
@@ -146,7 +159,18 @@ function UsersPage() {
 }
 
 function UsersLoadingSkeleton() {
-  return <div>Loading user details...</div>;
+  return (
+      <div className="flex flex-col items-center space-y-4">
+        <div>Loading user details...</div>
+        <div className="flex items-center space-x-4">
+          <Skeleton className="h-12 w-12 rounded-full" />
+          <div className="space-y-2">
+            <Skeleton className="h-4 w-[250px]" />
+            <Skeleton className="h-4 w-[200px]" />
+          </div>
+        </div>
+      </div>
+  )
 }
 
 export default function UsersSuspendedPage() {

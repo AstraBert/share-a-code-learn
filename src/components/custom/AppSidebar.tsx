@@ -10,7 +10,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
-import RefreshButton from "./RefreshButton"
+import HomeButton from "./HomeButton"
 
 // Menu items.
 const items = [
@@ -55,7 +55,7 @@ export function AppSidebar() {
                 </SidebarMenuItem>
               ))}
             </SidebarMenu>
-            <RefreshButton />
+            <HomeButton />
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
