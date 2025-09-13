@@ -17,7 +17,7 @@ export async function signup(formData: FormData) {
   }
 
   if (data.confirmPassword === data.password) {
-    
+
     const signUpData = {
         email: data.email,
         password: data.password

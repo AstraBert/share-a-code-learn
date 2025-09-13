@@ -38,7 +38,7 @@ function PostsPage() {
   useEffect(() => {
     if (postIdParam) {
       const postId = parseInt(postIdParam);
-      
+
       if (isNaN(postId)) {
         setError('Invalid post ID');
         return;
@@ -46,7 +46,7 @@ function PostsPage() {
 
       setLoading(true);
       setError(null);
-      
+
       getPostById(postId)
         .then((postToDisplay) => {
           setPost(postToDisplay);
@@ -64,15 +64,15 @@ function PostsPage() {
   if (!postIdParam) {
     return <div>Please provide a postId</div>;
   }
-  
+
   if (loading) {
     return <div>Loading post...</div>;
   }
-  
+
   if (error) {
     return <div>Error: {error}</div>;
   }
-  
+
   if (!post) {
     return <div>Post not found</div>;
   }
@@ -110,7 +110,7 @@ function PostsPage() {
                       <CodeBlockCopyButton/>
                     </CodeBlock>
                   </div>
-                  
+
                   <div>
                     <span className="text-sm font-semibold text-gray-600">Code:</span>
                     <CodeBlock code={post.code} language={post.codeLanguage}>
@@ -121,8 +121,8 @@ function PostsPage() {
               </CardContent>
               <CardFooter className="grid grid-cols-1 gap-y-1.5">
                 <Label>Likes: {post.likes}</Label>
-                <Button 
-                  variant={"secondary"} 
+                <Button
+                  variant={"secondary"}
                   onClick={() => increaseLikes(post.likes, post.id)}
                 >
                   <Heart/>
@@ -138,7 +138,7 @@ function PostsPage() {
                     </Button>
                 </Link>
             </div>
-            
+
         </div>
   );
 }

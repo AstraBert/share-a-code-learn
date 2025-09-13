@@ -64,7 +64,7 @@ export default function LoginPage() {
           Sign Up with GitHub
         </Button>
         <p>Already have an account?</p>
-        <a href='/login'> 
+        <a href='/login'>
           <Button type="button" className="w-full">
           Log In
           </Button>
