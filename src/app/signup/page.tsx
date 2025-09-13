@@ -1,5 +1,5 @@
 import { signup } from '@/app/signup/actions'
-import { loginWithGitHub } from '@/app/login/actions'
+import { loginWithDiscord } from '@/app/login/actions'
 
 import { Button } from "@/components/ui/button"
 import {
@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Github } from 'lucide-react'
+import DiscordIcon from '@/components/icons/Discord'
 
 export default function LoginPage() {
   return (
@@ -59,12 +59,12 @@ export default function LoginPage() {
         <Button type="submit" className="w-full">
           Sign Up
         </Button>
-        <Button type="button" onClick={loginWithGitHub} className="w-full">
-          <Github />
-          Sign Up with GitHub
+        <Button type="button" onClick={loginWithDiscord} className="w-full">
+          <DiscordIcon />
+          Sign Up with Discord
         </Button>
         <p>Already have an account?</p>
-        <a href='/login'> 
+        <a href='/login'>
           <Button type="button" className="w-full">
           Log In
           </Button>

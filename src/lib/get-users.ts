@@ -5,21 +5,21 @@ import { createAdminClient, createClient } from '@/utils/supabase/server';
 
 function mostFrequent<T>(arr: T[]): T | undefined {
   if (arr.length === 0) return undefined;
-     
+
   const frequency = new Map<T, number>();
   let maxCount = 0;
   let mostFrequentElement: T = arr[0];
-     
+
   for (const element of arr) {
     const count = (frequency.get(element) || 0) + 1;
     frequency.set(element, count);
-         
+
     if (count > maxCount) {
       maxCount = count;
       mostFrequentElement = element;
     }
   }
-     
+
   return mostFrequentElement;
 }
 
@@ -29,7 +29,7 @@ export async function getUserDetailsById(userId: string): Promise<DisplayUser> {
   const { data: userData, error: userError } = await supabaseAdmin.auth.admin.getUserById(userId)
   let postNumber: number = 0
   let mostUsedLanguage: string | undefined = undefined
-  
+
   if (userError) {
     // Throw a plain error object instead of the Supabase error
     console.error(userError)
@@ -51,11 +51,12 @@ export async function getUserDetailsById(userId: string): Promise<DisplayUser> {
       }
     }
     return {
-      name: userData.user.user_metadata.name, 
-      userName: userData.user.user_metadata.user_name! ?? "", 
-      avatarUrl: userData.user.user_metadata.avatar_url, 
-      postsNumber: postNumber, 
-      mostUsedLanguage: mostUsedLanguage
+      name: userData.user.user_metadata.name,
+      userName: userData.user.user_metadata.user_name! ?? "",
+      avatarUrl: userData.user.user_metadata.avatar_url,
+      postsNumber: postNumber,
+      mostUsedLanguage: mostUsedLanguage,
+      hasGithub: userData.user.user_metadata.iss === "https://api.github.com"
     } as DisplayUser;
   }
 }

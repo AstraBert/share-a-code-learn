@@ -1,6 +1,10 @@
-"use client"
+// app/posts/page.tsx
+'use client';
 
-import { useState, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { DisplayPost } from '@/lib/types';
+import { Skeleton } from '@/components/ui/skeleton';
 import {
   Card,
   CardContent,
@@ -12,45 +16,51 @@ import {
 import {
   Button,
 } from "@/components/ui/button"
-import { Skeleton } from '@/components/ui/skeleton';
 import {
   Avatar,
   AvatarFallback,
   AvatarImage,
 } from "@/components/ui/avatar"
 import { Label } from "@/components/ui/label";
-
-import Link from "next/link";
-import { getPosts } from '@/lib/get-posts';
-import { DisplayPost } from '@/lib/types';
 import { CopyCheck, Heart, Share } from 'lucide-react';
 import { CodeBlock, CodeBlockCopyButton } from "@/components/ai-elements/code-block";
 import { updateLikes } from "@/lib/likes";
-import SearchBar from '@/components/custom/SearchBar';
+import Link from 'next/link';
+import { Suspense } from 'react';
+import { search } from '@/lib/search';
 
-const MainPage = () => {
+function SearchPage() {
+  const searchParams = useSearchParams();
+  const userIdParam = searchParams.get('userId');
+  const languageParam = searchParams.get('language');
+  const keywordsParam = searchParams.get('keywords');
   const [posts, setPosts] = useState<DisplayPost[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [sharedPosts, setSharedPosts] = useState<Set<number>>(new Set());
 
-  // Fetch posts on component mount
   useEffect(() => {
-    const fetchPosts = async () => {
-      try {
-        setLoading(true);
-        const data = await getPosts();
-        if (typeof data === "undefined") {
-          setError('Failed to load posts');
-        } else {
-          setPosts(data);
-        }
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchPosts();
-  }, []);
+    if (userIdParam || keywordsParam || languageParam) {
+      setLoading(true);
+      setError(null);
+
+      search(userIdParam, languageParam, keywordsParam)
+        .then((postsToDisplay) => {
+          setPosts(postsToDisplay);
+        })
+        .catch((err) => {
+          setError('Failed to load post');
+          console.error(err);
+        })
+        .finally(() => {
+          setLoading(false);
+        });
+    }
+  }, [userIdParam, languageParam, keywordsParam]);
+
+  if (!userIdParam && !languageParam && !keywordsParam) {
+    return <div>Please provide a search parameter</div>;
+  }
 
   const increaseLikes = async (currentLikes: number, postId: number) => {
     try {
@@ -88,7 +98,7 @@ const MainPage = () => {
   if (loading) {
     return (
       <div className="flex flex-col items-center space-y-4">
-        <div>Loading posts...</div>
+        <div>Loading search results...</div>
         <div className="flex items-center space-x-4">
           <Skeleton className="h-12 w-12 rounded-full" />
           <div className="space-y-2">
@@ -119,22 +129,21 @@ const MainPage = () => {
     <div className="min-h-screen p-8">
       <div className="max-w-4xl mx-auto">
         <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold">Share-A-Code Learn</h1>
-          <h2 className="text-xl font-bold">Learn from Others with Their Code</h2>
+          <Link href={"/"}><h1 className="text-3xl font-bold">Share-A-Code Learn</h1></Link>
+          <Link href={"/"}><h2 className="text-xl font-bold">Learn from Others with Their Code</h2></Link>
         </div>
         <div className='flex justify-center items-center'>
-          <Link href={"https://app.shareacode.cc"}>
+          <Link href={"/"}>
             <Avatar style={{ width: '120px', height: '120px' }}>
               <AvatarImage src="/shareacode.png" alt="Share-A-Code Logo"/>
               <AvatarFallback>S-A-C</AvatarFallback>
             </Avatar>
           </Link>
         </div>
+        <div className="flex justify-center items-center mb-8">
+          <h3 className="text-lg font-bold text-center">Results from your search:</h3>
+        </div>
         <br />
-        <br />
-<div className='flex bg-white border-0 shadow-2xl hover:shadow-blue-500/20 transform hover:scale-[1.02] transition-all duration-200 items-center justify-center rounded-2xl ring-1 ring-gray-900/5 p-1'>
-  <SearchBar />
-</div>
         <br />
         <div className="grid grid-cols-1 gap-6">
           {posts.map((dataPoint) => (
@@ -193,7 +202,35 @@ const MainPage = () => {
         </div>
       </div>
     </div>
-  )
+  );
 }
 
-export default MainPage;
+function SearchLoadingSkeleton() {
+  return (
+      <div className="flex flex-col items-center space-y-4">
+        <div>Loading search results...</div>
+        <div className="flex items-center space-x-4">
+          <Skeleton className="h-12 w-12 rounded-full" />
+          <div className="space-y-2">
+            <Skeleton className="h-4 w-[250px]" />
+            <Skeleton className="h-4 w-[200px]" />
+          </div>
+        </div>
+        <div className="flex items-center space-x-4">
+          <Skeleton className="h-12 w-12 rounded-full" />
+          <div className="space-y-2">
+            <Skeleton className="h-4 w-[250px]" />
+            <Skeleton className="h-4 w-[200px]" />
+          </div>
+        </div>
+      </div>
+  );
+}
+
+export default function SearchSuspendedPage() {
+  return (
+    <Suspense fallback={<SearchLoadingSkeleton />}>
+      <SearchPage />
+    </Suspense>
+  );
+}

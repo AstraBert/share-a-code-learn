@@ -5,6 +5,7 @@ import { getPostById } from '@/lib/get-posts';
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { DisplayPost } from '@/lib/types';
+import { Suspense } from 'react';
 import {
   Card,
   CardContent,
@@ -27,7 +28,7 @@ import { CodeBlock, CodeBlockCopyButton } from "@/components/ai-elements/code-bl
 import { updateLikes } from "@/lib/likes";
 import Link from 'next/link';
 
-export default function PostsPage() {
+function PostsPage() {
   const searchParams = useSearchParams();
   const postIdParam = searchParams.get('postId');
   const [post, setPost] = useState<DisplayPost | undefined>(undefined);
@@ -37,7 +38,7 @@ export default function PostsPage() {
   useEffect(() => {
     if (postIdParam) {
       const postId = parseInt(postIdParam);
-      
+
       if (isNaN(postId)) {
         setError('Invalid post ID');
         return;
@@ -45,7 +46,7 @@ export default function PostsPage() {
 
       setLoading(true);
       setError(null);
-      
+
       getPostById(postId)
         .then((postToDisplay) => {
           setPost(postToDisplay);
@@ -63,15 +64,15 @@ export default function PostsPage() {
   if (!postIdParam) {
     return <div>Please provide a postId</div>;
   }
-  
+
   if (loading) {
     return <div>Loading post...</div>;
   }
-  
+
   if (error) {
     return <div>Error: {error}</div>;
   }
-  
+
   if (!post) {
     return <div>Post not found</div>;
   }
@@ -109,7 +110,7 @@ export default function PostsPage() {
                       <CodeBlockCopyButton/>
                     </CodeBlock>
                   </div>
-                  
+
                   <div>
                     <span className="text-sm font-semibold text-gray-600">Code:</span>
                     <CodeBlock code={post.code} language={post.codeLanguage}>
@@ -120,8 +121,8 @@ export default function PostsPage() {
               </CardContent>
               <CardFooter className="grid grid-cols-1 gap-y-1.5">
                 <Label>Likes: {post.likes}</Label>
-                <Button 
-                  variant={"secondary"} 
+                <Button
+                  variant={"secondary"}
                   onClick={() => increaseLikes(post.likes, post.id)}
                 >
                   <Heart/>
@@ -137,7 +138,19 @@ export default function PostsPage() {
                     </Button>
                 </Link>
             </div>
-            
+
         </div>
+  );
+}
+
+function PostsLoadingSkeleton() {
+  return <div>Loading posts...</div>;
+}
+
+export default function PostsSuspendedPage() {
+  return (
+    <Suspense fallback={<PostsLoadingSkeleton />}>
+      <PostsPage />
+    </Suspense>
   );
 }
