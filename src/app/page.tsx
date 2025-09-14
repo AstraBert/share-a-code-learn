@@ -132,9 +132,9 @@ const MainPage = () => {
         </div>
         <br />
         <br />
-<div className='flex bg-white border-0 shadow-2xl hover:shadow-blue-500/20 transform hover:scale-[1.02] transition-all duration-200 items-center justify-center rounded-2xl ring-1 ring-gray-900/5 p-1'>
-  <SearchBar />
-</div>
+          <div className='flex bg-white border-0 shadow-2xl hover:shadow-blue-500/20 transform hover:scale-[1.02] transition-all duration-200 items-center justify-center rounded-2xl ring-1 ring-gray-900/5 p-1'>
+            <SearchBar />
+          </div>
         <br />
         <div className="grid grid-cols-1 gap-6">
           {posts.map((dataPoint) => (
