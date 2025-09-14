@@ -12,7 +12,19 @@ export async function getPosts(): Promise<undefined | DisplayPost[]> {
     return undefined
   }
 
-  return await getDisplayPosts(posts as SocialPost[]);
+  // Step 1: Sort by date (most recent first)
+  const sortedByDate = posts.sort((a, b) =>
+    new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+  );
+
+  // Step 2: Take random number between 10-15 posts
+  const randomCount = Math.floor(Math.random() * 6) + 10; // Random between 10-15
+  const topRecentPosts = sortedByDate.slice(0, randomCount);
+
+  // Step 3: Sort those posts by likes (highest first)
+  const finalOrdered = topRecentPosts.sort((a, b) => b.likes - a.likes);
+
+  return await getDisplayPosts(finalOrdered as SocialPost[]);
 }
 
 export async function getPostById(postId: number): Promise<undefined | DisplayPost> {
